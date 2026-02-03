@@ -1,5 +1,5 @@
 {
-  "name": "@walletpilot/sdk",
+  "name": "walletpilot-sdk",
   "version": "0.1.0",
   "description": "SDK for AI agents to execute on-chain transactions with user-granted permissions",
   "type": "module",
