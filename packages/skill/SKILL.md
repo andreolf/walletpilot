@@ -1,5 +1,5 @@
 ---
-name: WalletPilot
+name: WalletPilot-7715
 description: Execute on-chain transactions with user-granted permissions. Built on MetaMask ERC-7715. No private keys, full guardrails.
 tags:
   - crypto
@@ -14,9 +14,9 @@ tags:
   - automation
 ---
 
-# WalletPilot
+# WalletPilot-7715
 
-Give your AI agent crypto superpowers with user-granted wallet permissions.
+Give your AI agent crypto superpowers with MetaMask ERC-7715 permissions.
 
 ## Overview
 
