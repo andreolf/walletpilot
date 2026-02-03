@@ -1,9 +1,19 @@
 import { Hono } from 'hono';
 import { handle } from 'hono/vercel';
 import { cors } from 'hono/cors';
+import { Redis } from '@upstash/redis';
 
 // ============================================================================
-// In-memory stores (for demo - use database in production)
+// Redis client (Upstash)
+// ============================================================================
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || '',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || '',
+});
+
+// ============================================================================
+// In-memory stores (for non-persistent data)
 // ============================================================================
 
 const API_KEYS = new Map<string, { id: string; name: string }>([
@@ -12,7 +22,6 @@ const API_KEYS = new Map<string, { id: string; name: string }>([
 
 const permissions = new Map<string, any>();
 const transactions = new Map<string, any>();
-const waitlist = new Map<string, { email: string; createdAt: string }>();
 
 // ============================================================================
 // App Setup
@@ -61,7 +70,7 @@ app.get('/', (c) => {
 app.get('/health', (c) => c.json({ status: 'ok' }));
 
 // ============================================================================
-// Waitlist
+// Waitlist (persisted to Upstash Redis)
 // ============================================================================
 
 app.post('/waitlist', async (c) => {
@@ -73,25 +82,54 @@ app.post('/waitlist', async (c) => {
       return c.json({ success: false, error: 'Invalid email' }, 400);
     }
     
-    if (waitlist.has(email)) {
+    // Check if already exists
+    const exists = await redis.sismember('waitlist:emails', email);
+    if (exists) {
       return c.json({ success: true, message: 'Already on the list!' });
     }
     
-    waitlist.set(email, {
+    // Add to waitlist set
+    await redis.sadd('waitlist:emails', email);
+    
+    // Store signup details
+    await redis.hset(`waitlist:${email}`, {
       email,
       createdAt: new Date().toISOString(),
     });
     
-    console.log(`[Waitlist] New signup: ${email} (total: ${waitlist.size})`);
+    // Get total count
+    const count = await redis.scard('waitlist:emails');
+    console.log(`[Waitlist] New signup: ${email} (total: ${count})`);
     
-    return c.json({ success: true, message: 'You\'re on the list!' });
-  } catch {
-    return c.json({ success: false, error: 'Invalid request' }, 400);
+    return c.json({ success: true, message: "You're on the list!" });
+  } catch (err) {
+    console.error('[Waitlist] Error:', err);
+    return c.json({ success: false, error: 'Server error' }, 500);
   }
 });
 
-app.get('/waitlist/count', (c) => {
-  return c.json({ count: waitlist.size });
+app.get('/waitlist/count', async (c) => {
+  try {
+    const count = await redis.scard('waitlist:emails');
+    return c.json({ count });
+  } catch {
+    return c.json({ count: 0 });
+  }
+});
+
+app.get('/waitlist/list', async (c) => {
+  // Protected endpoint - require auth
+  const authHeader = c.req.header('Authorization');
+  if (authHeader !== `Bearer ${process.env.ADMIN_SECRET}`) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
+  }
+  
+  try {
+    const emails = await redis.smembers('waitlist:emails');
+    return c.json({ success: true, data: emails, count: emails.length });
+  } catch {
+    return c.json({ success: false, error: 'Server error' }, 500);
+  }
 });
 
 // ============================================================================
