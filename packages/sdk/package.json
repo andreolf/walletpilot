@@ -1,6 +1,6 @@
 {
   "name": "walletpilot-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SDK for AI agents to execute on-chain transactions with user-granted permissions",
   "type": "module",
   "main": "./dist/index.js",
@@ -13,7 +13,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts",
