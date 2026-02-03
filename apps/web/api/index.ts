@@ -12,6 +12,7 @@ const API_KEYS = new Map<string, { id: string; name: string }>([
 
 const permissions = new Map<string, any>();
 const transactions = new Map<string, any>();
+const waitlist = new Map<string, { email: string; createdAt: string }>();
 
 // ============================================================================
 // App Setup
@@ -58,6 +59,40 @@ app.get('/', (c) => {
 });
 
 app.get('/health', (c) => c.json({ status: 'ok' }));
+
+// ============================================================================
+// Waitlist
+// ============================================================================
+
+app.post('/waitlist', async (c) => {
+  try {
+    const body = await c.req.json();
+    const email = body.email?.trim().toLowerCase();
+    
+    if (!email || !email.includes('@')) {
+      return c.json({ success: false, error: 'Invalid email' }, 400);
+    }
+    
+    if (waitlist.has(email)) {
+      return c.json({ success: true, message: 'Already on the list!' });
+    }
+    
+    waitlist.set(email, {
+      email,
+      createdAt: new Date().toISOString(),
+    });
+    
+    console.log(`[Waitlist] New signup: ${email} (total: ${waitlist.size})`);
+    
+    return c.json({ success: true, message: 'You\'re on the list!' });
+  } catch {
+    return c.json({ success: false, error: 'Invalid request' }, 400);
+  }
+});
+
+app.get('/waitlist/count', (c) => {
+  return c.json({ count: waitlist.size });
+});
 
 // ============================================================================
 // Permissions

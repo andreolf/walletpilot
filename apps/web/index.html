@@ -460,7 +460,7 @@
     <div class="container">
       <h2>Get Early Access</h2>
       <p>Be the first to build with WalletPilot. SDK launching soon.</p>
-      <form class="waitlist-form" action="https://formspree.io/f/your-form-id" method="POST">
+      <form class="waitlist-form" id="waitlist-form">
         <input type="email" name="email" placeholder="Enter your email" required>
         <button type="submit" class="btn btn-primary">Join Waitlist</button>
       </form>
@@ -478,8 +478,7 @@
   </footer>
 
   <script>
-    // Simple form handling
-    document.querySelector('.waitlist-form')?.addEventListener('submit', async (e) => {
+    document.getElementById('waitlist-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
       const email = form.querySelector('input[name="email"]').value;
@@ -488,11 +487,28 @@
       button.textContent = 'Joining...';
       button.disabled = true;
       
-      // For now, just show success (replace with actual form endpoint)
-      setTimeout(() => {
-        button.textContent = 'You\'re on the list!';
-        button.style.background = '#22c55e';
-      }, 1000);
+      try {
+        const res = await fetch('/api/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          button.textContent = data.message || "You're on the list!";
+          button.style.background = '#22c55e';
+          form.querySelector('input').disabled = true;
+        } else {
+          button.textContent = data.error || 'Error';
+          button.style.background = '#ef4444';
+          button.disabled = false;
+        }
+      } catch {
+        button.textContent = 'Error - try again';
+        button.style.background = '#ef4444';
+        button.disabled = false;
+      }
     });
   </script>
 </body>
