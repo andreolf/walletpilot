@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WalletPilot - Give Your AI Agent Crypto Superpowers</title>
+  <meta name="description" content="SDK for AI agents to execute on-chain transactions with user-granted permissions. Built on MetaMask's ERC-7715 standard.">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="WalletPilot - AI Agent Wallet SDK">
+  <meta property="og:description" content="Give your AI agent crypto superpowers with user-granted permissions.">
+  <meta property="og:type" content="website">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+  
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-secondary: #111111;
+      --text: #ffffff;
+      --text-muted: #888888;
+      --accent: #f97316;
+      --accent-hover: #fb923c;
+      --border: #222222;
+      --gradient: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Navigation */
+    nav {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 120px 0 80px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .badge .dot {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .gradient {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 48px;
+    }
+
+    .ctas {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--text-muted);
+    }
+
+    /* Code Example */
+    .code-section {
+      padding: 80px 0;
+    }
+
+    .code-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 48px;
+    }
+
+    .code-block {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .code-block .comment { color: #6b7280; }
+    .code-block .keyword { color: #c084fc; }
+    .code-block .string { color: #34d399; }
+    .code-block .function { color: #60a5fa; }
+    .code-block .number { color: #fbbf24; }
+
+    /* Features */
+    .features {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .feature {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    .feature h3 {
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Built On */
+    .built-on {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .built-on h2 {
+      font-size: 1.5rem;
+      margin-bottom: 32px;
+      color: var(--text-muted);
+    }
+
+    .logos {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .logos img {
+      height: 40px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .logos img:hover {
+      opacity: 1;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Waitlist */
+    .waitlist {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .waitlist h2 {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    .waitlist p {
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .waitlist-form {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .waitlist-form input {
+      flex: 1;
+      min-width: 250px;
+      padding: 14px 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .waitlist-form input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: var(--text);
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 80px 0 60px; }
+      .nav-links { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container">
+      <a href="/" class="logo">WalletPilot</a>
+      <div class="nav-links">
+        <a href="https://github.com/andreolf/walletpilot">GitHub</a>
+        <a href="#docs">Docs</a>
+        <a href="#waitlist" class="btn btn-primary">Get Early Access</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <div class="badge">
+        <span class="dot"></span>
+        Built on MetaMask ERC-7715
+      </div>
+      <h1>Give Your AI Agent<br><span class="gradient">Crypto Superpowers</span></h1>
+      <p class="hero-subtitle">
+        SDK for AI agents to execute on-chain transactions with user-granted permissions. 
+        No private keys shared. Full guardrails. MetaMask-native.
+      </p>
+      <div class="ctas">
+        <a href="#waitlist" class="btn btn-primary">Get Early Access</a>
+        <a href="https://github.com/andreolf/walletpilot" class="btn btn-secondary">
+          View on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="code-section">
+    <div class="container">
+      <h2>Simple API, Powerful Control</h2>
+      <div class="code-block">
+<span class="keyword">import</span> { WalletPilot } <span class="keyword">from</span> <span class="string">'@walletpilot/sdk'</span>;
+
+<span class="keyword">const</span> pilot = <span class="keyword">new</span> <span class="function">WalletPilot</span>({ apiKey: <span class="string">'wp_...'</span> });
+
+<span class="comment">// Request permission (user approves once in MetaMask)</span>
+<span class="keyword">const</span> { deepLink } = <span class="keyword">await</span> pilot.<span class="function">requestPermission</span>({
+  spend: { token: <span class="string">'USDC'</span>, limit: <span class="string">'100'</span>, period: <span class="string">'day'</span> },
+  chains: [<span class="number">1</span>, <span class="number">137</span>, <span class="number">42161</span>],
+  expiry: <span class="string">'30d'</span>
+});
+
+<span class="comment">// Later, execute without approval</span>
+<span class="keyword">await</span> pilot.<span class="function">execute</span>({
+  to: <span class="string">'0x...'</span>,
+  data: swapCalldata,
+  chainId: <span class="number">1</span>
+});
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <h2>Why WalletPilot?</h2>
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-icon">🔐</div>
+          <h3>No Private Keys</h3>
+          <p>Users keep their MetaMask. Grant scoped permissions via ERC-7715, not keys.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <h3>Execute Without Approval</h3>
+          <p>Once permission is granted, agents execute transactions instantly. No popups.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🛡️</div>
+          <h3>Built-in Guardrails</h3>
+          <p>Spend limits, chain allowlists, contract restrictions. Safety by design.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🦊</div>
+          <h3>MetaMask Native</h3>
+          <p>Built on MetaMask's Smart Accounts Kit. Trusted by millions.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🔗</div>
+          <h3>Multi-Chain</h3>
+          <p>Ethereum, Polygon, Arbitrum, Optimism, Base. One permission, all chains.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📊</div>
+          <h3>Full Visibility</h3>
+          <p>Track every transaction. Dashboard for monitoring agent activity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="built-on">
+    <div class="container">
+      <h2>Built on Standards</h2>
+      <div class="logos">
+        <span class="logo-text">MetaMask</span>
+        <span class="logo-text">ERC-7715</span>
+        <span class="logo-text">ERC-4337</span>
+        <span class="logo-text">viem</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="waitlist" id="waitlist">
+    <div class="container">
+      <h2>Get Early Access</h2>
+      <p>Be the first to build with WalletPilot. SDK launching soon.</p>
+      <form class="waitlist-form" action="https://formspree.io/f/your-form-id" method="POST">
+        <input type="email" name="email" placeholder="Enter your email" required>
+        <button type="submit" class="btn btn-primary">Join Waitlist</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>
+        WalletPilot &copy; 2026 &nbsp;|&nbsp; 
+        <a href="https://github.com/andreolf/walletpilot">GitHub</a> &nbsp;|&nbsp;
+        <a href="https://x.com/walletpilot">X/Twitter</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Simple form handling
+    document.querySelector('.waitlist-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.querySelector('input[name="email"]').value;
+      const button = form.querySelector('button');
+      
+      button.textContent = 'Joining...';
+      button.disabled = true;
+      
+      // For now, just show success (replace with actual form endpoint)
+      setTimeout(() => {
+        button.textContent = 'You\'re on the list!';
+        button.style.background = '#22c55e';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
