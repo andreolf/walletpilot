@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "api/route.ts": {
+      "runtime": "@vercel/node@3.0.0"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/route"
+    },
+    {
+      "source": "/api",
+      "destination": "/api/route"
+    }
+  ]
+}
