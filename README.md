@@ -2,7 +2,9 @@
 
 > SDK for AI agents to execute on-chain transactions with user-granted permissions.
 
-Built on MetaMask's [ERC-7715](https://docs.metamask.io/smart-accounts-kit/concepts/erc7715/) standard and Smart Accounts Kit.
+Built on MetaMask's [ERC-7715](https://docs.metamask.io/smart-accounts-kit/concepts/advanced-permissions/) standard and [Smart Accounts Kit](https://docs.metamask.io/smart-accounts-kit/).
+
+**[Website](https://walletpilot.dev)** | **[Dashboard](https://app.walletpilot.dev)** | **[Docs](https://docs.walletpilot.dev)** | **[API](https://api.walletpilot.dev)** | **[npm](https://www.npmjs.com/package/walletpilot-sdk)**
 
 ## The Problem
 
@@ -69,7 +71,7 @@ import { WalletPilot, PermissionBuilder } from '@walletpilot/sdk';
 
 // Initialize client
 const pilot = new WalletPilot({
-  apiKey: 'wp_...', // Get at walletpilot.xyz
+  apiKey: 'wp_...', // Get at app.walletpilot.dev
   debug: true,
 });
 
@@ -101,10 +103,12 @@ console.log('Transaction:', result.hash);
 ```
 walletpilot/
 ├── packages/
-│   └── sdk/          # @walletpilot/sdk - Core TypeScript SDK
+│   └── sdk/          # walletpilot-sdk - Core TypeScript SDK
 ├── apps/
-│   ├── web/          # Landing page (walletpilot.xyz)
-│   └── api/          # REST API (api.walletpilot.xyz)
+│   ├── landing/      # Landing page (walletpilot.dev)
+│   ├── dashboard/    # Developer dashboard (app.walletpilot.dev)
+│   ├── api/          # REST API (api.walletpilot.dev)
+│   └── docs/         # Documentation (docs.walletpilot.dev)
 ├── turbo.json
 └── package.json
 ```
@@ -125,7 +129,7 @@ npm run dev
 ## Built On
 
 - [MetaMask Smart Accounts Kit](https://docs.metamask.io/smart-accounts-kit/)
-- [ERC-7715](https://docs.metamask.io/smart-accounts-kit/concepts/erc7715/) - Wallet Permissions
+- [ERC-7715](https://docs.metamask.io/smart-accounts-kit/concepts/advanced-permissions/) - Advanced Permissions
 - [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337) - Account Abstraction
 - [viem](https://viem.sh/) - TypeScript Ethereum library
 
@@ -133,8 +137,9 @@ npm run dev
 
 - [x] Core SDK
 - [x] Landing page
-- [ ] Hosted API
-- [ ] Developer dashboard
+- [x] Hosted API
+- [x] Developer dashboard
+- [x] Documentation
 - [ ] Cursor skill
 - [ ] Python SDK
 - [ ] Agent explorer
