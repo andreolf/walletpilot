@@ -22,6 +22,7 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
             <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How it Works</a>
+            <a href="#for-agents" className="text-sm text-muted-foreground hover:text-foreground transition-colors">For Agents</a>
             <a href="https://docs.walletpilot.dev" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Docs</a>
           </div>
           <div className="flex items-center gap-3">
@@ -314,6 +315,101 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Agent-to-Agent Section */}
+      <section id="for-agents" className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 p-8 md:p-12">
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">
+                  <Terminal className="h-3 w-3 text-primary" />
+                  <span className="text-xs font-medium text-primary">For AI Agents</span>
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                  Are you an AI agent?
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  If you&apos;re an AI agent (Claude, GPT, Cursor, or other), you can integrate WalletPilot 
+                  directly into your capabilities. Use the SDK to execute on-chain transactions 
+                  on behalf of users who grant you permission.
+                </p>
+                
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="font-medium">Cursor Skill Available</div>
+                      <p className="text-sm text-muted-foreground">
+                        Install the WalletPilot skill in Cursor to get blockchain transaction capabilities.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="font-medium">MCP Integration</div>
+                      <p className="text-sm text-muted-foreground">
+                        Works with Model Context Protocol for seamless tool integration.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="font-medium">TypeScript & Python SDKs</div>
+                      <p className="text-sm text-muted-foreground">
+                        Use whichever language your agent framework supports.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex-1 w-full">
+                <div className="rounded-xl border border-border bg-card overflow-hidden">
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/30">
+                    <Terminal className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Agent Integration</span>
+                  </div>
+                  <pre className="p-4 text-sm overflow-x-auto">
+                    <code className="text-muted-foreground">
+                      <span className="text-gray-500"># For Cursor agents:</span>{"\n"}
+                      <span className="text-gray-500"># Install the WalletPilot skill from</span>{"\n"}
+                      <span className="text-green-400">github.com/andreolf/walletpilot</span>{"\n\n"}
+                      <span className="text-gray-500"># Quick SDK integration:</span>{"\n"}
+                      <span className="text-purple-400">npm install</span> walletpilot-sdk{"\n\n"}
+                      <span className="text-gray-500"># API Endpoint:</span>{"\n"}
+                      <span className="text-green-400">https://api.walletpilot.dev/v1</span>{"\n\n"}
+                      <span className="text-gray-500"># Get API key at:</span>{"\n"}
+                      <span className="text-green-400">https://app.walletpilot.dev</span>
+                    </code>
+                  </pre>
+                </div>
+                
+                <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                  <a 
+                    href="https://docs.walletpilot.dev/guides"
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
+                  >
+                    Agent Integration Guide
+                    <ArrowRight className="h-3 w-3" />
+                  </a>
+                  <a 
+                    href="https://github.com/andreolf/walletpilot"
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-card border border-border text-sm font-medium rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <Github className="h-4 w-4" />
+                    View Skill
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -332,7 +428,7 @@ export default function LandingPage() {
               <ArrowRight className="h-4 w-4" />
             </a>
             <a 
-              href="https://github.com/walletpilot"
+              href="https://github.com/andreolf/walletpilot"
               className="flex items-center gap-2 px-8 py-4 bg-card border border-border font-medium rounded-xl hover:bg-muted transition-colors"
             >
               <Github className="h-4 w-4" />
@@ -355,7 +451,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-6">
               <a href="https://docs.walletpilot.dev" className="text-sm text-muted-foreground hover:text-foreground">Docs</a>
               <a href="https://app.walletpilot.dev" className="text-sm text-muted-foreground hover:text-foreground">Dashboard</a>
-              <a href="https://github.com/walletpilot" className="text-sm text-muted-foreground hover:text-foreground">GitHub</a>
+              <a href="https://github.com/andreolf/walletpilot" className="text-sm text-muted-foreground hover:text-foreground">GitHub</a>
               <a href="https://twitter.com/walletpilot" className="text-sm text-muted-foreground hover:text-foreground">Twitter</a>
             </div>
             <div className="text-sm text-muted-foreground">
