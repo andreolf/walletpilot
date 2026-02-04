@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "dev": {
       "cache": false,
@@ -11,5 +11,7 @@
     },
     "lint": {},
     "test": {}
-  }
+  },
+  "ui": "tui",
+  "globalPassThroughEnv": ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"]
 }

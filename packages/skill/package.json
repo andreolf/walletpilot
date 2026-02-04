@@ -10,7 +10,7 @@
     "SKILL.md"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts",
+    "compile": "tsup src/index.ts --format esm --dts",
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
