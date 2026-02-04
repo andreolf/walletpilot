@@ -111,6 +111,8 @@ export interface WalletPilotConfig {
   rpcUrls?: Record<number, string>;
   /** Enable debug logging */
   debug?: boolean;
+  /** Enable anonymous telemetry (default: true, set to false to disable) */
+  telemetry?: boolean;
 }
 
 /**

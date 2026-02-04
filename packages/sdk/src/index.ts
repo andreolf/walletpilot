@@ -63,5 +63,8 @@ export type {
   ApiResponse,
 } from './types.js';
 
+// Telemetry (for advanced use)
+export { Telemetry } from './telemetry.js';
+
 // Version
-export const VERSION = '0.1.0';
+export const VERSION = '0.1.2';

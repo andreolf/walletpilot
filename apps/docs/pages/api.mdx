@@ -1,0 +1,169 @@
+# API Reference
+
+REST API documentation for WalletPilot.
+
+**Base URL:** `https://api.walletpilot.dev`
+
+## Authentication
+
+All API requests require an API key in the Authorization header:
+
+```bash
+curl -H "Authorization: Bearer wp_your_api_key" \
+  https://api.walletpilot.dev/v1/permissions
+```
+
+## Permissions
+
+### Create Permission Request
+
+```
+POST /v1/permissions/request
+```
+
+Request body:
+
+```json
+{
+  "permission": {
+    "spend": {
+      "ETH": "0.1",
+      "USDC": "100"
+    },
+    "contracts": ["0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"],
+    "chains": [1, 137],
+    "expiry": "7d"
+  },
+  "callbackUrl": "https://yourapp.com/callback"
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "requestId": "req_abc123",
+    "deepLink": "metamask://...",
+    "expiresAt": "2026-02-11T12:00:00Z"
+  }
+}
+```
+
+### Get Permission
+
+```
+GET /v1/permissions/:id
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "perm_xyz789",
+    "userAddress": "0x...",
+    "chains": [1, 137],
+    "constraints": {
+      "spend": { "ETH": "0.1" }
+    },
+    "expiresAt": "2026-02-11T12:00:00Z",
+    "usage": {
+      "spent": { "ETH": "0.05" },
+      "txCount": 3
+    }
+  }
+}
+```
+
+### List Permissions
+
+```
+GET /v1/permissions
+```
+
+### Revoke Permission
+
+```
+DELETE /v1/permissions/:id
+```
+
+## Transactions
+
+### Execute Transaction
+
+```
+POST /v1/tx/execute
+```
+
+Request body:
+
+```json
+{
+  "permissionId": "perm_xyz789",
+  "intent": {
+    "to": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+    "value": "0.01",
+    "data": "0x...",
+    "chainId": 1
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "tx_def456",
+    "hash": "0x...",
+    "chainId": 1,
+    "status": "pending"
+  }
+}
+```
+
+### Get Transaction
+
+```
+GET /v1/tx/:hash
+```
+
+### Get Transaction History
+
+```
+GET /v1/tx/history/:permissionId
+```
+
+## Errors
+
+All errors follow this format:
+
+```json
+{
+  "success": false,
+  "error": "Error message here"
+}
+```
+
+### HTTP Status Codes
+
+| Code | Description |
+|------|-------------|
+| 200 | Success |
+| 400 | Bad request |
+| 401 | Unauthorized |
+| 403 | Forbidden (limit exceeded, etc.) |
+| 404 | Not found |
+| 500 | Internal server error |
+
+## Rate Limits
+
+| Plan | Requests/minute |
+|------|-----------------|
+| Free | 60 |
+| Pro | 600 |
+| Enterprise | Unlimited |

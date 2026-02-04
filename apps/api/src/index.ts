@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { serve } from '@hono/node-server';
 
+import authRoutes from './routes/auth.js';
 import permissionsRoutes from './routes/permissions.js';
 import transactionsRoutes from './routes/transactions.js';
 
@@ -13,9 +14,15 @@ const app = new Hono();
 // ============================================================================
 
 app.use('*', cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://walletpilot.xyz'],
+  origin: [
+    'http://localhost:3000', 
+    'http://localhost:5173',
+    'https://walletpilot.xyz',
+    'https://app.walletpilot.xyz',
+    'https://dashboard-lake-nine.vercel.app',
+  ],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Refresh-Token'],
 }));
 
 app.use('*', logger());
@@ -39,6 +46,7 @@ app.get('/health', (c) => {
 });
 
 // API v1 routes
+app.route('/v1/auth', authRoutes);
 app.route('/v1/permissions', permissionsRoutes);
 app.route('/v1/tx', transactionsRoutes);
 

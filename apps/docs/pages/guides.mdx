@@ -1,0 +1,179 @@
+# Guides
+
+Practical guides for common use cases.
+
+## DCA Bot
+
+Build a Dollar-Cost Averaging bot that automatically buys ETH on a schedule.
+
+```typescript
+import { WalletPilot } from 'walletpilot-sdk';
+
+const pilot = new WalletPilot({ apiKey: 'wp_...' });
+
+// Request permission for weekly DCA
+const permission = await pilot.requestPermission({
+  spend: { USDC: '500' },  // $500 per month
+  contracts: ['uniswap'],
+  chains: [1],
+  expiry: '30d'
+});
+
+// Wait for user approval...
+
+// Execute weekly buy
+async function executeDCA() {
+  const swapData = encodeSwap('USDC', 'ETH', '125'); // $125/week
+  
+  await pilot.execute({
+    permissionId: permission.id,
+    to: UNISWAP_ROUTER,
+    data: swapData,
+    chainId: 1
+  });
+}
+
+// Run weekly
+setInterval(executeDCA, 7 * 24 * 60 * 60 * 1000);
+```
+
+## Yield Optimizer
+
+Automatically move funds between lending protocols for best yields.
+
+```typescript
+const permission = await pilot.requestPermission({
+  spend: { USDC: '10000' },
+  contracts: ['aave', 'compound'],
+  chains: [1],
+  expiry: '30d'
+});
+
+async function optimizeYield() {
+  const aaveRate = await getAaveRate('USDC');
+  const compoundRate = await getCompoundRate('USDC');
+  
+  if (aaveRate > compoundRate + 0.5) {
+    // Move to Aave
+    await pilot.execute({
+      permissionId: permission.id,
+      to: AAVE_POOL,
+      data: encodeDeposit('USDC', balance),
+      chainId: 1
+    });
+  }
+}
+```
+
+## Portfolio Rebalancer
+
+Keep your portfolio at target allocations.
+
+```typescript
+const permission = await pilot.requestPermission({
+  spend: { 
+    ETH: '1',
+    USDC: '1000',
+    WBTC: '0.1'
+  },
+  contracts: ['uniswap'],
+  chains: [1],
+  expiry: '30d'
+});
+
+const targetAllocation = {
+  ETH: 0.5,   // 50%
+  WBTC: 0.3,  // 30%
+  USDC: 0.2   // 20%
+};
+
+async function rebalance() {
+  const portfolio = await getPortfolio(userAddress);
+  const trades = calculateRebalanceTrades(portfolio, targetAllocation);
+  
+  for (const trade of trades) {
+    await pilot.execute({
+      permissionId: permission.id,
+      to: UNISWAP_ROUTER,
+      data: encodeSwap(trade.from, trade.to, trade.amount),
+      chainId: 1
+    });
+  }
+}
+```
+
+## AI Trading Agent
+
+Integrate with an AI model for autonomous trading.
+
+```typescript
+import OpenAI from 'openai';
+
+const openai = new OpenAI();
+const pilot = new WalletPilot({ apiKey: 'wp_...' });
+
+async function aiTrade(marketData: MarketData) {
+  // Ask AI for trading decision
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [{
+      role: 'user',
+      content: `Given this market data: ${JSON.stringify(marketData)}, 
+                should I buy, sell, or hold ETH? 
+                Respond with JSON: { action, amount, reason }`
+    }]
+  });
+  
+  const decision = JSON.parse(response.choices[0].message.content);
+  
+  if (decision.action === 'buy') {
+    await pilot.execute({
+      permissionId: permission.id,
+      to: UNISWAP_ROUTER,
+      data: encodeBuy('ETH', decision.amount),
+      chainId: 1
+    });
+  }
+}
+```
+
+## Best Practices
+
+### 1. Request Minimal Permissions
+
+Only request the permissions you need:
+
+```typescript
+// Good - specific limits
+{ spend: { ETH: '0.1' }, contracts: ['uniswap'] }
+
+// Bad - overly broad
+{ spend: { ETH: '100' }, contracts: [] }
+```
+
+### 2. Handle Errors Gracefully
+
+```typescript
+try {
+  await pilot.execute(intent);
+} catch (error) {
+  if (error.code === 'LIMIT_EXCEEDED') {
+    // Request new permission or notify user
+  }
+}
+```
+
+### 3. Check Remaining Allowance
+
+```typescript
+const usage = await pilot.getPermissionUsage(permissionId);
+if (parseFloat(usage.remaining.ETH) < 0.01) {
+  // Request new permission
+}
+```
+
+### 4. Use Appropriate Expiry
+
+- Short tasks: `'24h'` or `'7d'`
+- Ongoing automation: `'30d'`
+- Never use unlimited expiry

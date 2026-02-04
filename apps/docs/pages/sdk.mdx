@@ -1,0 +1,153 @@
+# SDK Reference
+
+Complete reference for the WalletPilot SDK.
+
+## WalletPilot Class
+
+### Constructor
+
+```typescript
+import { WalletPilot } from 'walletpilot-sdk';
+
+const pilot = new WalletPilot(config: WalletPilotConfig);
+```
+
+#### WalletPilotConfig
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `apiKey` | `string` | Yes | Your API key from the dashboard |
+| `apiUrl` | `string` | No | Custom API URL (default: `https://api.walletpilot.dev`) |
+| `rpcUrls` | `Record<number, string>` | No | Custom RPC URLs per chain ID |
+| `debug` | `boolean` | No | Enable debug logging |
+| `telemetry` | `boolean` | No | Enable anonymous telemetry (default: true) |
+
+### Methods
+
+## requestPermission()
+
+Request permission from a user to execute transactions.
+
+```typescript
+const permission = await pilot.requestPermission(options: PermissionRequest): Promise<Permission>
+```
+
+#### PermissionRequest
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `spend` | `Record<string, string>` | Yes | Spending limits per token (e.g., `{ ETH: '0.1' }`) |
+| `contracts` | `string[]` | No | Allowed contract addresses or protocol names |
+| `chains` | `number[]` | No | Allowed chain IDs (default: `[1]`) |
+| `expiry` | `string` | No | Expiry duration (e.g., `'7d'`, `'24h'`) |
+
+#### Permission Response
+
+```typescript
+{
+  id: string;           // Permission ID
+  deepLink: string;     // MetaMask deep link for approval
+  qrCode: string;       // QR code data URL
+  expiresAt: Date;      // Request expiry time
+  status: 'pending' | 'approved' | 'rejected';
+}
+```
+
+## execute()
+
+Execute a transaction using an approved permission.
+
+```typescript
+const tx = await pilot.execute(intent: TransactionIntent): Promise<Transaction>
+```
+
+#### TransactionIntent
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `permissionId` | `string` | Yes | The permission ID to use |
+| `to` | `string` | Yes | Destination address |
+| `value` | `string` | No | ETH value to send |
+| `data` | `string` | No | Transaction calldata |
+| `chainId` | `number` | Yes | Chain ID to execute on |
+
+#### Transaction Response
+
+```typescript
+{
+  id: string;           // Internal transaction ID
+  hash: string;         // On-chain transaction hash
+  chainId: number;
+  status: 'pending' | 'confirmed' | 'failed';
+  gasUsed?: string;
+}
+```
+
+## getPermission()
+
+Get details about a permission.
+
+```typescript
+const permission = await pilot.getPermission(permissionId: string): Promise<PermissionDetails>
+```
+
+## getPermissionUsage()
+
+Get usage stats for a permission.
+
+```typescript
+const usage = await pilot.getPermissionUsage(permissionId: string): Promise<UsageStats>
+```
+
+#### UsageStats
+
+```typescript
+{
+  spent: Record<string, string>;     // Amount spent per token
+  remaining: Record<string, string>; // Remaining allowance per token
+  txCount: number;                   // Total transactions executed
+}
+```
+
+## revokePermission()
+
+Revoke an active permission.
+
+```typescript
+await pilot.revokePermission(permissionId: string): Promise<void>
+```
+
+## Supported Chains
+
+| Chain | Chain ID |
+|-------|----------|
+| Ethereum Mainnet | 1 |
+| Polygon | 137 |
+| Arbitrum One | 42161 |
+| Optimism | 10 |
+| Base | 8453 |
+
+## Error Handling
+
+```typescript
+import { WalletPilotError } from 'walletpilot-sdk';
+
+try {
+  await pilot.execute(intent);
+} catch (error) {
+  if (error instanceof WalletPilotError) {
+    console.log('Code:', error.code);
+    console.log('Message:', error.message);
+  }
+}
+```
+
+### Error Codes
+
+| Code | Description |
+|------|-------------|
+| `PERMISSION_DENIED` | Permission not approved or revoked |
+| `LIMIT_EXCEEDED` | Transaction would exceed spending limit |
+| `INVALID_CONTRACT` | Contract not in allowlist |
+| `EXPIRED` | Permission has expired |
+| `CHAIN_NOT_ALLOWED` | Chain ID not in permission |

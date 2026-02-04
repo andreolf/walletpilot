@@ -1,0 +1,41 @@
+# WalletPilot Documentation
+
+Welcome to the WalletPilot documentation. WalletPilot enables AI agents to execute blockchain transactions on behalf of users with granular permissions and spending limits.
+
+## What is WalletPilot?
+
+WalletPilot is an SDK and API that allows developers to build AI agents that can:
+
+- **Request permissions** from users with specific spending limits
+- **Execute transactions** within those approved limits
+- **Track usage** via a comprehensive dashboard
+
+## Key Features
+
+- **Granular Permissions** - Define exactly which contracts, tokens, and chains an agent can use
+- **Spending Limits** - Set daily, weekly, or total spending caps per token
+- **Session Keys** - Based on ERC-7715, no private key sharing required
+- **Multi-chain** - Works across Ethereum, Polygon, Arbitrum, Optimism, and Base
+- **Full Audit Trail** - Every transaction logged and visible in your dashboard
+
+## Quick Links
+
+- [Getting Started](/getting-started) - Install the SDK and make your first request
+- [SDK Reference](/sdk) - Complete API documentation
+- [Dashboard](https://app.walletpilot.dev) - Manage your API keys and view analytics
+
+## Installation
+
+```bash
+npm install walletpilot-sdk
+```
+
+```typescript
+import { WalletPilot } from 'walletpilot-sdk';
+
+const pilot = new WalletPilot({ 
+  apiKey: 'wp_your_api_key' 
+});
+```
+
+Get your API key at [app.walletpilot.dev](https://app.walletpilot.dev).

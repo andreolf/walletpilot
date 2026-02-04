@@ -11,6 +11,7 @@ import type {
   ApiResponse,
 } from './types.js';
 import { PermissionBuilder, calculateExpiry } from './permissions.js';
+import { Telemetry } from './telemetry.js';
 
 const DEFAULT_API_URL = 'https://api.walletpilot.xyz';
 
@@ -50,9 +51,10 @@ const CHAIN_MAP = {
  * ```
  */
 export class WalletPilot {
-  private config: Required<WalletPilotConfig>;
+  private config: Required<Omit<WalletPilotConfig, 'telemetry'>> & { telemetry: boolean };
   private permissions: Map<string, GrantedPermission> = new Map();
   private sessionKey?: Hex;
+  private telemetry: Telemetry;
 
   constructor(config: WalletPilotConfig = {}) {
     this.config = {
@@ -60,7 +62,16 @@ export class WalletPilot {
       apiUrl: config.apiUrl || DEFAULT_API_URL,
       rpcUrls: config.rpcUrls || {},
       debug: config.debug || false,
+      telemetry: config.telemetry !== false,
     };
+
+    // Initialize telemetry (opt-out via telemetry: false)
+    this.telemetry = new Telemetry({
+      enabled: this.config.telemetry,
+    });
+
+    // Track SDK initialization
+    this.telemetry.track('sdk_init', { success: true });
   }
 
   /**
@@ -87,17 +98,30 @@ export class WalletPilot {
     
     if (this.config.apiKey) {
       // Use hosted API
-      const response = await this.apiCall<PermissionRequestResponse>(
-        '/v1/permissions/request',
-        'POST',
-        { permission: request }
-      );
-      
-      if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to request permission');
+      try {
+        const response = await this.apiCall<PermissionRequestResponse>(
+          '/v1/permissions/request',
+          'POST',
+          { permission: request }
+        );
+        
+        if (!response.success || !response.data) {
+          this.telemetry.track('request_permission', { 
+            success: false, 
+            error_type: 'api_error' 
+          });
+          throw new Error(response.error || 'Failed to request permission');
+        }
+        
+        this.telemetry.track('request_permission', { success: true });
+        return response.data;
+      } catch (error) {
+        this.telemetry.track('request_permission', { 
+          success: false, 
+          error_type: 'request_failed' 
+        });
+        throw error;
       }
-      
-      return response.data;
     }
 
     // Self-hosted / local mode - generate locally
@@ -115,6 +139,8 @@ export class WalletPilot {
     };
 
     const deepLink = `metamask://wallet_grantPermissions?payload=${encodeURIComponent(JSON.stringify(payload))}`;
+
+    this.telemetry.track('request_permission', { success: true });
 
     return {
       requestId,
@@ -141,6 +167,11 @@ export class WalletPilot {
     // Find a valid permission for this chain
     const permission = this.findPermissionForChain(intent.chainId);
     if (!permission) {
+      this.telemetry.track('execute', { 
+        success: false, 
+        error_type: 'no_permission',
+        chain_id: intent.chainId 
+      });
       throw new Error(`No valid permission for chain ${intent.chainId}`);
     }
 
@@ -149,24 +180,47 @@ export class WalletPilot {
 
     if (this.config.apiKey) {
       // Use hosted API
-      const response = await this.apiCall<TransactionResult>(
-        '/v1/tx/execute',
-        'POST',
-        { 
-          intent,
-          permissionId: permission.id,
+      try {
+        const response = await this.apiCall<TransactionResult>(
+          '/v1/tx/execute',
+          'POST',
+          { 
+            intent,
+            permissionId: permission.id,
+          }
+        );
+        
+        if (!response.success || !response.data) {
+          this.telemetry.track('execute', { 
+            success: false, 
+            error_type: 'api_error',
+            chain_id: intent.chainId 
+          });
+          throw new Error(response.error || 'Failed to execute transaction');
         }
-      );
-      
-      if (!response.success || !response.data) {
-        throw new Error(response.error || 'Failed to execute transaction');
+        
+        this.telemetry.track('execute', { 
+          success: true, 
+          chain_id: intent.chainId 
+        });
+        return response.data;
+      } catch (error) {
+        this.telemetry.track('execute', { 
+          success: false, 
+          error_type: 'execute_failed',
+          chain_id: intent.chainId 
+        });
+        throw error;
       }
-      
-      return response.data;
     }
 
     // Self-hosted mode - execute directly
-    return this.executeLocally(intent, permission);
+    const result = await this.executeLocally(intent, permission);
+    this.telemetry.track('execute', { 
+      success: result.status !== 'failed', 
+      chain_id: intent.chainId 
+    });
+    return result;
   }
 
   /**
