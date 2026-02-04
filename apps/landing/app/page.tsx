@@ -375,9 +375,9 @@ export default function LandingPage() {
                   </div>
                   <pre className="p-4 text-sm overflow-x-auto">
                     <code className="text-muted-foreground">
-                      <span className="text-gray-500"># For Cursor agents:</span>{"\n"}
-                      <span className="text-gray-500"># Install the WalletPilot skill from</span>{"\n"}
-                      <span className="text-green-400">github.com/andreolf/walletpilot</span>{"\n\n"}
+                      <span className="text-gray-500"># For Cursor/Claude agents:</span>{"\n"}
+                      <span className="text-gray-500"># Install skill from ClawHub:</span>{"\n"}
+                      <span className="text-green-400">clawhub.com/skills/walletpilot-7715</span>{"\n\n"}
                       <span className="text-gray-500"># Quick SDK integration:</span>{"\n"}
                       <span className="text-purple-400">npm install</span> walletpilot-sdk{"\n\n"}
                       <span className="text-gray-500"># API Endpoint:</span>{"\n"}
@@ -397,11 +397,11 @@ export default function LandingPage() {
                     <ArrowRight className="h-3 w-3" />
                   </a>
                   <a 
-                    href="https://github.com/andreolf/walletpilot"
+                    href="https://clawhub.com/skills/walletpilot-7715"
                     className="flex items-center justify-center gap-2 px-4 py-2 bg-card border border-border text-sm font-medium rounded-lg hover:bg-muted transition-colors"
                   >
-                    <Github className="h-4 w-4" />
-                    View Skill
+                    <ExternalLink className="h-4 w-4" />
+                    View on ClawHub
                   </a>
                 </div>
               </div>
