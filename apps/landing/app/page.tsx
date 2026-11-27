@@ -88,13 +88,13 @@ export default function LandingPage() {
                   <span className="text-purple-400">const</span> pilot = <span className="text-purple-400">new</span> <span className="text-yellow-400">WalletPilot</span>({"{"}{"\n"}
                   {"  "}apiKey: <span className="text-green-400">'wp_your_api_key'</span>{"\n"}
                   {"}"});{"\n\n"}
-                  <span className="text-gray-500">// Request permission from user</span>{"\n"}
+                  <span className="text-gray-500">{"// Request permission from user"}</span>{"\n"}
                   <span className="text-purple-400">const</span> permission = <span className="text-purple-400">await</span> pilot.<span className="text-blue-400">requestPermission</span>({"{"}{"\n"}
                   {"  "}spend: {"{"} ETH: <span className="text-orange-400">'0.1'</span>, USDC: <span className="text-orange-400">'100'</span> {"}"},{"\n"}
                   {"  "}contracts: [<span className="text-green-400">'uniswap'</span>, <span className="text-green-400">'aave'</span>],{"\n"}
                   {"  "}expiry: <span className="text-green-400">'7d'</span>{"\n"}
                   {"}"});{"\n\n"}
-                  <span className="text-gray-500">// Execute transactions within limits</span>{"\n"}
+                  <span className="text-gray-500">{"// Execute transactions within limits"}</span>{"\n"}
                   <span className="text-purple-400">await</span> pilot.<span className="text-blue-400">execute</span>({"{"}{"\n"}
                   {"  "}to: <span className="text-green-400">'0x...'</span>,{"\n"}
                   {"  "}value: <span className="text-green-400">'0.01'</span>,{"\n"}
