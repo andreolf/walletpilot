@@ -1,7 +1,8 @@
 {
   "version": 2,
   "framework": null,
-  "buildCommand": "echo \"No build step: Vercel compiles api/index.ts itself\"",
+  "buildCommand": "mkdir -p public",
+  "outputDirectory": "public",
   "rewrites": [
     {
       "source": "/(.*)",
