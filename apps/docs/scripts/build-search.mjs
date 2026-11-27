@@ -1,44 +1,45 @@
 // Builds the Pagefind search index from the prerendered HTML after `next build`.
 // Never fails the build: without an index the site works and only search is empty.
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
-const countHtml = (dir) =>
+const htmlFiles = (dir, suffix) =>
   existsSync(dir)
-    ? readdirSync(dir, { recursive: true }).filter((f) => String(f).endsWith('.html')).length
-    : 0;
+    ? readdirSync(dir, { recursive: true }).map(String).filter((f) => f.endsWith(suffix))
+    : [];
 
-const candidates = [
-  '.next/server/app',
-  '.vercel/output/static',
-  '.vercel/output/functions',
-  '../../.vercel/output/static',
-  '../../.vercel/output/functions',
-];
-for (const dir of candidates) {
-  console.log(`[search] ${dir}: ${countHtml(dir)} html files`);
-}
+// A plain `next build` (local, `next start`, `vercel build` from the CLI)
+// leaves the pages in .next/server/app and serves the index from public/.
+let site = '.next/server/app';
+let output = 'public/_pagefind';
 
-const site = '.next/server/app';
-if (countHtml(site) === 0) {
-  // Diagnostic: show where the builder put the prerendered pages.
-  for (const root of ['.next', '.vercel', '../../.vercel', '../../.next']) {
-    if (!existsSync(root)) continue;
-    const hits = readdirSync(root, { recursive: true })
-      .map(String)
-      .filter((f) => /(^|\/)(sdk|guides)(\.|\/|$)/.test(f) && !f.includes('node_modules'))
-      .slice(0, 25);
-    console.log(`[search] ${root}:`, hits);
+if (htmlFiles(site, '.html').length === 0) {
+  // Vercel's cloud builder moves the pages into its own output layout during
+  // `next build`: .next/output/functions/<page>.prerender-fallback.html, with
+  // static files in .next/output/static. Rebuild a plain HTML tree from that.
+  const functions = '.next/output/functions';
+  const suffix = '.prerender-fallback.html';
+  const pages = htmlFiles(functions, suffix).filter((f) => !f.startsWith('_'));
+  if (pages.length === 0) {
+    console.warn('[search] no prerendered HTML found; skipping the search index');
+    process.exit(0);
   }
-  console.warn(`[search] no prerendered HTML in ${site}; skipping the search index`);
-  process.exit(0);
+  site = '.next/search-pages';
+  output = '.next/output/static/_pagefind';
+  rmSync(site, { recursive: true, force: true });
+  for (const page of pages) {
+    const target = join(site, page.slice(0, -suffix.length) + '.html');
+    mkdirSync(dirname(target), { recursive: true });
+    cpSync(join(functions, page), target);
+  }
 }
 
-const result = spawnSync(
-  'pagefind',
-  ['--site', site, '--output-path', 'public/_pagefind'],
-  { stdio: 'inherit', shell: true },
-);
+console.log(`[search] indexing ${site} into ${output}`);
+const result = spawnSync('pagefind', ['--site', site, '--output-path', output], {
+  stdio: 'inherit',
+  shell: true,
+});
 if (result.status !== 0) {
   console.warn('[search] pagefind failed; continuing without a search index');
 }
