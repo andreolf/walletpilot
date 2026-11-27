@@ -245,7 +245,7 @@ export default function Dashboard() {
                   <div>
                     <div className="font-medium text-green-500 mb-1">API Key Created!</div>
                     <div className="text-sm text-muted-foreground mb-2">
-                      Copy this key now - it won't be shown again.
+                      Copy this key now - it won&apos;t be shown again.
                     </div>
                     <code className="bg-black/50 px-3 py-2 rounded text-sm font-mono">
                       {showNewKey}
@@ -263,7 +263,7 @@ export default function Dashboard() {
                   onClick={() => setShowNewKey(null)}
                   className="mt-3 text-sm text-muted-foreground hover:text-foreground"
                 >
-                  I've saved it, close this
+                  I&apos;ve saved it, close this
                 </button>
               </div>
             )}

@@ -5,12 +5,13 @@
   "scripts": {
     "dev": "next dev -p 3003",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "next": "14.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "next": "16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "lucide-react": "^0.321.0",
     "clsx": "^2.1.0",
     "tailwind-merge": "^2.2.1",
@@ -18,10 +19,16 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.16",
-    "@types/react": "^18.2.52",
+    "@types/react": "^19.0.0",
     "autoprefixer": "^10.4.17",
-    "postcss": "^8.4.35",
+    "postcss": "^8.5.23",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "16.4.6"
+  },
+  "engines": {
+    "node": "24.x"
   }
 }

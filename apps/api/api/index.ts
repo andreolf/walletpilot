@@ -1,4 +1,18 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
+// Helpers Vercel's Node.js runtime adds to the request and response. Typed here
+// so the app needs no `@vercel/node` dev dependency: it was used for these two
+// types only, and its dependency tree carries advisories with no fixed release.
+type VercelRequest = IncomingMessage & {
+  query: Record<string, string | string[]>;
+  cookies: Record<string, string>;
+  body: any;
+};
+type VercelResponse = ServerResponse & {
+  status(code: number): VercelResponse;
+  json(body: unknown): VercelResponse;
+  send(body: unknown): VercelResponse;
+};
 import { createClient } from '@supabase/supabase-js';
 import { createHash, randomBytes } from 'crypto';
 
