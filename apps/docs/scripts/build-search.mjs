@@ -21,6 +21,15 @@ for (const dir of candidates) {
 
 const site = '.next/server/app';
 if (countHtml(site) === 0) {
+  // Diagnostic: show where the builder put the prerendered pages.
+  for (const root of ['.next', '.vercel', '../../.vercel', '../../.next']) {
+    if (!existsSync(root)) continue;
+    const hits = readdirSync(root, { recursive: true })
+      .map(String)
+      .filter((f) => /(^|\/)(sdk|guides)(\.|\/|$)/.test(f) && !f.includes('node_modules'))
+      .slice(0, 25);
+    console.log(`[search] ${root}:`, hits);
+  }
   console.warn(`[search] no prerendered HTML in ${site}; skipping the search index`);
   process.exit(0);
 }
